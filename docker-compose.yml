@@ -31,9 +31,8 @@ services:
         condition: service_started
     ports:
       - "9000:9000"
-      - "5173:5173"
     environment:
-      NODE_ENV: development
+      NODE_ENV: production
       DATABASE_URL: "postgres://postgres:${DB_PASSWORD}@postgres:5432/medusa"
       REDIS_URL: "redis://redis:6379"
       JWT_SECRET: "${JWT_SECRET}"
