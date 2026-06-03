@@ -47,6 +47,8 @@ services:
       PAYPAL_CLIENT_ID: "${PAYPAL_CLIENT_ID}"
       PAYPAL_CLIENT_SECRET: "${PAYPAL_CLIENT_SECRET}"
       NODE_OPTIONS: "--max-old-space-size=3072"
+      MEDUSA_ADMIN_EMAIL: "${MEDUSA_ADMIN_EMAIL}"
+      MEDUSA_ADMIN_PASSWORD: "${MEDUSA_ADMIN_PASSWORD}"
 
 volumes:
   pgdata:
