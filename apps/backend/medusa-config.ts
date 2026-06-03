@@ -25,6 +25,10 @@ module.exports = defineConfig({
       server: {
         ...(config?.server ?? {}),
         allowedHosts: true,
+        fs: {
+          strict: false,
+          allow: ['/'],
+        },
       },
     }),
   },
