@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: medusa_postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: medusa
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  redis:
+    image: redis:7-alpine
+    container_name: medusa_redis
+    restart: unless-stopped
+
+  medusa:
+    build: .
+    container_name: medusa_backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    ports:
+      - "9000:9000"
+      - "5173:5173"
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: "postgres://postgres:${DB_PASSWORD}@postgres:5432/medusa"
+      REDIS_URL: "redis://redis:6379"
+      JWT_SECRET: "${JWT_SECRET}"
+      COOKIE_SECRET: "${COOKIE_SECRET}"
+      STORE_CORS: "${STOREFRONT_URL}"
+      ADMIN_CORS: "${ADMIN_CORS}"
+      AUTH_CORS: "${ADMIN_CORS}"
+      BACKEND_URL: "${BACKEND_URL}"
+      STRIPE_API_KEY: "${STRIPE_API_KEY}"
+      STRIPE_WEBHOOK_SECRET: "${STRIPE_WEBHOOK_SECRET}"
+      PAYPAL_CLIENT_ID: "${PAYPAL_CLIENT_ID}"
+      PAYPAL_CLIENT_SECRET: "${PAYPAL_CLIENT_SECRET}"
+      NODE_OPTIONS: "--max-old-space-size=3072"
+
+volumes:
+  pgdata:
