@@ -51,10 +51,12 @@ services:
       MEDUSA_ADMIN_EMAIL: "${MEDUSA_ADMIN_EMAIL}"
       MEDUSA_ADMIN_PASSWORD: "${MEDUSA_ADMIN_PASSWORD}"
       MEDUSA_FILE_BACKEND_URL: "${MEDUSA_FILE_BACKEND_URL}"
+      # Absolute upload dir, pinned to the volume mount below so it's mode-independent.
+      MEDUSA_UPLOAD_DIR: "/server/apps/backend/static"
 
     volumes:
-      # Persist locally-uploaded product images across redeploys. Must match the
-      # file-local upload_dir resolved from cwd (/server/apps/backend) → /static.
+      # Persist locally-uploaded product images across redeploys.
+      # Path MUST equal MEDUSA_UPLOAD_DIR above.
       - medusa_uploads:/server/apps/backend/static
 
     networks:

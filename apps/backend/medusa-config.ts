@@ -50,7 +50,12 @@ module.exports = defineConfig({
             resolve: "@medusajs/file-local",
             id: "local",
             options: {
-              upload_dir: "static",
+              // Absolute so the upload dir is identical whether the container runs
+              // `medusa develop` (cwd=/server/apps/backend) or `medusa start`
+              // (cwd=.medusa/server). It MUST match the docker-compose volume mount,
+              // otherwise uploads won't persist across redeploys. Falls back to a
+              // relative "static" for local (non-container) runs.
+              upload_dir: process.env.MEDUSA_UPLOAD_DIR || "static",
               backend_url:
                 process.env.MEDUSA_FILE_BACKEND_URL ||
                 "https://compose-reboot-optical-transmitter-kvvhi-8299f2-69-62-122-190.sslip.io/static",
