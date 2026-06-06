@@ -37,6 +37,28 @@ module.exports = defineConfig({
         ],
       },
     },
+    {
+      // Local file storage. Uploads land in apps/backend/static (persisted via a
+      // Docker volume — see docker-compose.yml) and are served from BACKEND_URL/static.
+      // backend_url MUST be the public HTTPS origin so image URLs work in emails and
+      // on the (eventually HTTPS) storefront. BACKEND_URL is plain-HTTP :9000, so we
+      // use a dedicated var; at prod cutover set MEDUSA_FILE_BACKEND_URL=https://medusa.strydr.co.uk/static.
+      resolve: "@medusajs/medusa/file",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/file-local",
+            id: "local",
+            options: {
+              upload_dir: "static",
+              backend_url:
+                process.env.MEDUSA_FILE_BACKEND_URL ||
+                "https://compose-reboot-optical-transmitter-kvvhi-8299f2-69-62-122-190.sslip.io/static",
+            },
+          },
+        ],
+      },
+    },
   ],
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,

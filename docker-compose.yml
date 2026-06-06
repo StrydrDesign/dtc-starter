@@ -50,6 +50,12 @@ services:
       NODE_OPTIONS: "--max-old-space-size=3072"
       MEDUSA_ADMIN_EMAIL: "${MEDUSA_ADMIN_EMAIL}"
       MEDUSA_ADMIN_PASSWORD: "${MEDUSA_ADMIN_PASSWORD}"
+      MEDUSA_FILE_BACKEND_URL: "${MEDUSA_FILE_BACKEND_URL}"
+
+    volumes:
+      # Persist locally-uploaded product images across redeploys. Must match the
+      # file-local upload_dir resolved from cwd (/server/apps/backend) → /static.
+      - medusa_uploads:/server/apps/backend/static
 
     networks:
       - default
@@ -57,6 +63,7 @@ services:
 
 volumes:
   pgdata:
+  medusa_uploads:
 
 networks:
   dokploy-network:
