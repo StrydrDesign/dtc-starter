@@ -49,5 +49,15 @@ services:
       MEDUSA_ADMIN_EMAIL: "${MEDUSA_ADMIN_EMAIL}"
       MEDUSA_ADMIN_PASSWORD: "${MEDUSA_ADMIN_PASSWORD}"
 
+    networks:
+      - default
+      - dokploy-network
+
 volumes:
   pgdata:
+
+networks:
+  dokploy-network:
+    external: true
+  default:
+    driver: bridge
