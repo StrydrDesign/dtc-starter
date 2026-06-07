@@ -10,13 +10,16 @@ import {
 import { CreateEmailOptions, Resend } from "resend"
 import type { ReactNode } from "react"
 import { orderPlacedEmail } from "./emails/order-placed"
+import { orderShippedEmail } from "./emails/order-shipped"
 
 enum Templates {
   ORDER_PLACED = "order-placed",
+  ORDER_SHIPPED = "order-shipped",
 }
 
 const templates: { [key in Templates]?: (props: unknown) => ReactNode } = {
   [Templates.ORDER_PLACED]: orderPlacedEmail,
+  [Templates.ORDER_SHIPPED]: orderShippedEmail,
 }
 
 type ResendOptions = {
@@ -83,6 +86,8 @@ class ResendNotificationProviderService extends AbstractNotificationProviderServ
     switch (template) {
       case Templates.ORDER_PLACED:
         return "Your Strydr order is confirmed"
+      case Templates.ORDER_SHIPPED:
+        return "Your Strydr order is on its way"
       default:
         return "New Email"
     }
