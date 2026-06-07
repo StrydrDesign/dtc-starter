@@ -64,6 +64,22 @@ module.exports = defineConfig({
         ],
       },
     },
+    {
+      // Royal Mail Click & Drop integration. Auto-pushes paid orders to the
+      // user's Click & Drop account on order.placed; a scheduled job syncs
+      // tracking back. Disabled gracefully if ROYALMAIL_API_KEY is unset.
+      resolve: "./src/modules/royalmail",
+      options: {
+        api_key: process.env.ROYALMAIL_API_KEY,
+        sender_trading_name: process.env.ROYALMAIL_SENDER_NAME || "Strydr",
+        ...(process.env.ROYALMAIL_DEFAULT_ITEM_WEIGHT_G
+          ? { default_item_weight_g: Number(process.env.ROYALMAIL_DEFAULT_ITEM_WEIGHT_G) }
+          : {}),
+        ...(process.env.ROYALMAIL_DEFAULT_PACKAGE_FORMAT
+          ? { default_package_format: process.env.ROYALMAIL_DEFAULT_PACKAGE_FORMAT }
+          : {}),
+      },
+    },
   ],
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
