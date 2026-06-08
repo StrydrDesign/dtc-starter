@@ -10,7 +10,7 @@ import {
   Text,
 } from "@react-email/components"
 import * as React from "react"
-import { BigNumberValue } from "@medusajs/framework/types"
+import type { BigNumberValue } from "@medusajs/framework/types"
 
 // Kinetic Canvas design tokens (design-reference/DESIGN.md) expressed as Tailwind
 // theme extensions so the email templates read like the rest of the brand system.

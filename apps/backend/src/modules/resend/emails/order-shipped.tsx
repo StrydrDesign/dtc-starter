@@ -8,7 +8,7 @@ import {
   Row,
   Section,
 } from "@react-email/components"
-import { CustomerDTO, OrderDTO } from "@medusajs/framework/types"
+import type { CustomerDTO, OrderDTO } from "@medusajs/framework/types"
 import { EmailLayout, Eyebrow } from "./components/brand"
 
 type OrderShippedEmailProps = {
