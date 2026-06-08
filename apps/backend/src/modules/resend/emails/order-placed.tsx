@@ -3,165 +3,156 @@ import {
   Column,
   Container,
   Heading,
-  Html,
   Img,
   Row,
   Section,
-  Tailwind,
-  Head,
-  Preview,
-  Body,
 } from "@react-email/components"
-import { BigNumberValue, CustomerDTO, OrderDTO } from "@medusajs/framework/types"
+import { CustomerDTO, OrderDTO } from "@medusajs/framework/types"
+import { EmailLayout, Eyebrow, formatPrice } from "./components/brand"
 
 type OrderPlacedEmailProps = {
   order: OrderDTO & {
-    customer: CustomerDTO
+    customer?: CustomerDTO
   }
 }
 
 function OrderPlacedEmailComponent({ order }: OrderPlacedEmailProps) {
-  const formatter = new Intl.NumberFormat([], {
-    style: "currency",
-    currencyDisplay: "narrowSymbol",
-    currency: order.currency_code,
-  })
-
-  const formatPrice = (price: BigNumberValue) => {
-    if (typeof price === "number") {
-      return formatter.format(price)
-    }
-    if (typeof price === "string") {
-      return formatter.format(parseFloat(price))
-    }
-    return price?.toString() || ""
-  }
+  const currency = order.currency_code
+  const price = (v: Parameters<typeof formatPrice>[0]) => formatPrice(v, currency)
 
   const firstName =
     order.customer?.first_name || order.shipping_address?.first_name || "there"
-
   const taxTotal = parseFloat(`${order.tax_total ?? 0}`)
+  const address = order.shipping_address
 
   return (
-    <Tailwind>
-      <Html className="font-sans bg-gray-100">
-        <Head />
-        <Preview>Thank you for your order from Strydr</Preview>
-        <Body className="bg-white my-10 mx-auto w-full max-w-2xl">
-          {/* Header */}
-          <Section className="bg-[#222222] px-6 py-5">
-            <Text className="m-0 text-2xl font-bold tracking-tight">
-              <span className="text-white">stry</span>
-              <span className="text-[#4cc04b]">dr</span>
-            </Text>
-          </Section>
+    <EmailLayout preview={`Order #${order.display_id} confirmed — thank you`}>
+      {/* Intro */}
+      <Container className="px-8 pt-8">
+        <Eyebrow>Order confirmed</Eyebrow>
+        <Heading className="m-0 mt-2 font-heading text-[26px] font-bold tracking-[-0.01em] text-ink">
+          Thank you, {firstName}
+        </Heading>
+        <Text className="mb-0 mt-3 font-sans text-[15px] leading-[1.55] text-body">
+          We&apos;re getting your crutch covers ready and will let you know the
+          moment they ship.
+        </Text>
+      </Container>
 
-          {/* Thank You Message */}
-          <Container className="p-6">
-            <Heading className="text-2xl font-bold text-center text-gray-800">
-              Thank you for your order, {firstName}
-            </Heading>
-            <Text className="text-center text-gray-600 mt-2">
-              We&apos;re getting your crutch covers ready and will let you know
-              when they ship.
-            </Text>
-          </Container>
-
-          {/* Order Items */}
-          <Container className="px-6">
-            <Heading className="text-xl font-semibold text-gray-800 mb-4">
-              Your items
-            </Heading>
-            <Row>
-              <Column>
-                <Text className="text-sm m-0 my-2 text-gray-500">
-                  Order #{order.display_id}
-                </Text>
-              </Column>
-            </Row>
-            {order.items?.map((item) => (
-              <Section key={item.id} className="border-b border-gray-200 py-4">
-                <Row>
-                  <Column className="w-1/3">
-                    <Img
-                      src={item.thumbnail ?? ""}
-                      alt={item.product_title ?? ""}
-                      className="rounded-lg"
-                      width="100%"
-                    />
-                  </Column>
-                  <Column className="w-2/3 pl-4">
-                    <Text className="text-lg font-semibold text-gray-800">
-                      {item.product_title}
-                    </Text>
-                    <Text className="text-gray-600">{item.variant_title}</Text>
-                    <Text className="text-gray-600 text-sm">
-                      Qty: {item.quantity}
-                    </Text>
-                    <Text className="text-gray-800 mt-2 font-bold">
-                      {formatPrice(item.total)}
-                    </Text>
-                  </Column>
-                </Row>
-              </Section>
-            ))}
-
-            {/* Order Summary */}
-            <Section className="mt-8">
-              <Heading className="text-xl font-semibold text-gray-800 mb-4">
-                Order summary
-              </Heading>
-              <Row className="text-gray-600">
-                <Column className="w-1/2">
-                  <Text className="m-0">Subtotal</Text>
+      {/* Items */}
+      <Container className="px-8 pt-6">
+        <Text className="m-0 mb-2 font-sans text-[12px] font-medium uppercase tracking-[0.08em] text-muted">
+          Order #{order.display_id}
+        </Text>
+        <Section className="rounded-[20px] bg-panel p-2">
+          {order.items?.map((item) => (
+            <Section key={item.id} className="px-3 py-3">
+              <Row>
+                <Column className="w-[64px] align-top">
+                  <Img
+                    src={item.thumbnail ?? ""}
+                    alt={item.product_title ?? ""}
+                    width="56"
+                    height="56"
+                    className="rounded-[12px]"
+                    style={{ objectFit: "cover" }}
+                  />
                 </Column>
-                <Column className="w-1/2 text-right">
-                  <Text className="m-0">{formatPrice(order.item_total)}</Text>
+                <Column className="pl-4 align-top">
+                  <Text className="m-0 font-heading text-[15px] font-semibold text-ink">
+                    {item.product_title}
+                  </Text>
+                  <Text className="m-0 font-sans text-[13px] text-body">
+                    {[item.variant_title, `Qty ${item.quantity}`]
+                      .filter(Boolean)
+                      .join(" · ")}
+                  </Text>
                 </Column>
-              </Row>
-              {order.shipping_methods?.map((method) => (
-                <Row className="text-gray-600" key={method.id}>
-                  <Column className="w-1/2">
-                    <Text className="m-0">{method.name}</Text>
-                  </Column>
-                  <Column className="w-1/2 text-right">
-                    <Text className="m-0">{formatPrice(method.total)}</Text>
-                  </Column>
-                </Row>
-              ))}
-              {taxTotal > 0 && (
-                <Row className="text-gray-600">
-                  <Column className="w-1/2">
-                    <Text className="m-0">Tax</Text>
-                  </Column>
-                  <Column className="w-1/2 text-right">
-                    <Text className="m-0">{formatPrice(taxTotal)}</Text>
-                  </Column>
-                </Row>
-              )}
-              <Row className="border-t border-gray-200 mt-4 text-gray-800 font-bold">
-                <Column className="w-1/2">
-                  <Text>Total</Text>
-                </Column>
-                <Column className="w-1/2 text-right">
-                  <Text>{formatPrice(order.total)}</Text>
+                <Column className="align-top text-right">
+                  <Text className="m-0 font-heading text-[15px] font-bold text-ink">
+                    {price(item.total)}
+                  </Text>
                 </Column>
               </Row>
             </Section>
-          </Container>
+          ))}
+        </Section>
+      </Container>
 
-          {/* Footer */}
-          <Section className="bg-gray-50 p-6 mt-10">
-            <Text className="text-center text-gray-500 text-sm">
-              Questions about your order? Just reply to this email.
-            </Text>
-            <Text className="text-center text-gray-400 text-xs mt-4">
-              © {new Date().getFullYear()} Strydr. All rights reserved.
-            </Text>
-          </Section>
-        </Body>
-      </Html>
-    </Tailwind>
+      {/* Summary */}
+      <Container className="px-8 pt-4">
+        <Section className="rounded-[20px] bg-panel px-5 py-4">
+          <Row>
+            <Column>
+              <Text className="m-0 py-1 font-sans text-[14px] text-body">Subtotal</Text>
+            </Column>
+            <Column className="text-right">
+              <Text className="m-0 py-1 font-sans text-[14px] text-body">
+                {price(order.item_total)}
+              </Text>
+            </Column>
+          </Row>
+          {order.shipping_methods?.map((method) => (
+            <Row key={method.id}>
+              <Column>
+                <Text className="m-0 py-1 font-sans text-[14px] text-body">
+                  {method.name}
+                </Text>
+              </Column>
+              <Column className="text-right">
+                <Text className="m-0 py-1 font-sans text-[14px] text-body">
+                  {price(method.total)}
+                </Text>
+              </Column>
+            </Row>
+          ))}
+          {taxTotal > 0 && (
+            <Row>
+              <Column>
+                <Text className="m-0 py-1 font-sans text-[14px] text-body">Tax</Text>
+              </Column>
+              <Column className="text-right">
+                <Text className="m-0 py-1 font-sans text-[14px] text-body">
+                  {price(taxTotal)}
+                </Text>
+              </Column>
+            </Row>
+          )}
+          <Row>
+            <Column>
+              <Text className="m-0 mt-2 font-heading text-[18px] font-bold text-ink">
+                Total
+              </Text>
+            </Column>
+            <Column className="text-right">
+              <Text className="m-0 mt-2 font-heading text-[18px] font-bold text-ink">
+                {price(order.total)}
+              </Text>
+            </Column>
+          </Row>
+        </Section>
+      </Container>
+
+      {/* Shipping address */}
+      {address && (
+        <Container className="px-8 pb-9 pt-6">
+          <Eyebrow>Shipping to</Eyebrow>
+          <Text className="m-0 mt-2 font-sans text-[14px] leading-[1.5] text-body">
+            {[address.first_name, address.last_name].filter(Boolean).join(" ")}
+            <br />
+            {address.address_1}
+            {address.address_2 ? (
+              <>
+                <br />
+                {address.address_2}
+              </>
+            ) : null}
+            <br />
+            {[address.city, address.postal_code].filter(Boolean).join(", ")}
+          </Text>
+        </Container>
+      )}
+    </EmailLayout>
   )
 }
 
