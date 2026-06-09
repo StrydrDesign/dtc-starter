@@ -13,9 +13,12 @@ export const sendMarketingBroadcastWorkflow = createWorkflow(
       options: { throwIfKeyNotFound: true },
     })
 
+    // Mark sending; if the send step throws BEFORE Resend accepts it, this
+    // step's compensation reverts the status to draft.
     updateMarketingEmailStep({ id, status: "sending" }).config({ name: "mark-sending" })
 
-    const payload = transform({ rows }, (d) => ({
+    const payload = transform({ rows, id }, (d) => ({
+      id: d.id,
       name: d.rows[0].name,
       subject: d.rows[0].subject,
       body_html: d.rows[0].body_html ?? "",
@@ -23,14 +26,6 @@ export const sendMarketingBroadcastWorkflow = createWorkflow(
     }))
 
     const sent = sendMarketingBroadcastStep(payload)
-
-    const final = transform({ id, sent }, (d) => ({
-      id: d.id,
-      status: "sent" as const,
-      resend_broadcast_id: d.sent.broadcastId,
-      sent_at: new Date(),
-    }))
-    updateMarketingEmailStep(final).config({ name: "mark-sent" })
 
     return new WorkflowResponse(sent)
   }

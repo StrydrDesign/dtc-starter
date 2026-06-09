@@ -42,16 +42,33 @@ export default class ResendMarketingService {
     return { client: this.client, audienceId: this.audienceId }
   }
 
-  /** Add a buyer to the audience. Create-and-ignore-duplicate so we never resubscribe an opt-out. */
+  /**
+   * Add a buyer to the audience. We ONLY ever create brand-new contacts — if the
+   * contact already exists we leave it completely untouched. This is the
+   * load-bearing guarantee that we never resubscribe someone who opted out; it
+   * does NOT rely on create's duplicate-handling behaviour.
+   */
   async upsertContact(input: { email: string; firstName?: string }): Promise<void> {
     const { client, audienceId } = this.ensure()
+
+    const existing = await client.contacts.get({ audienceId, email: input.email })
+    if (existing.data) {
+      return // already a contact — never modify (preserves any opt-out)
+    }
+
     const { error } = await client.contacts.create({
       audienceId,
       email: input.email,
       firstName: input.firstName,
       unsubscribed: false,
     })
-    if (error && !/already (exists|in)/i.test(`${(error as any).message ?? error}`)) {
+    // A concurrent create (race) may now report a duplicate — that's fine too.
+    if (
+      error &&
+      !/already|exist|conflict|409|422/i.test(
+        `${(error as any).name ?? ""} ${(error as any).message ?? error}`
+      )
+    ) {
       throw new MedusaError(
         MedusaError.Types.UNEXPECTED_STATE,
         `Resend contact create failed: ${(error as any).message ?? error}`
