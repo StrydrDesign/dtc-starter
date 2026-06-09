@@ -11,4 +11,4 @@ if [ -n "$MEDUSA_ADMIN_EMAIL" ] && [ -n "$MEDUSA_ADMIN_PASSWORD" ]; then
 fi
 
 echo "Starting Medusa..."
-exec pnpm dev
+exec pnpm start

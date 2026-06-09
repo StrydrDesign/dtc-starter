@@ -14,6 +14,8 @@ RUN pnpm install --no-frozen-lockfile
 
 COPY . .
 
+RUN cd /server/apps/backend && pnpm build
+
 EXPOSE 9000
 
 COPY start.sh ./start.sh
