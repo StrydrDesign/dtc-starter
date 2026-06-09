@@ -80,6 +80,11 @@ module.exports = defineConfig({
           : {}),
       },
     },
+    {
+      // Marketing Email Studio — persists email draft campaigns (name, subject,
+      // editor_json, body_html) and tracks send status + Resend broadcast ID.
+      resolve: "./src/modules/marketing-email",
+    },
   ],
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
