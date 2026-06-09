@@ -5,6 +5,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "react-router-dom"
 import { sdk } from "../../lib/sdk"
 
+export const config = defineRouteConfig({
+  label: "Marketing",
+  icon: Envelope,
+})
+
 type MarketingEmail = {
   id: string
   name: string
@@ -30,7 +35,7 @@ const statusColor = (
   return "grey"
 }
 
-const MarketingPage = () => {
+export default function MarketingPage() {
   const navigate = useNavigate()
   const queryClient = useQueryClient()
 
@@ -141,9 +146,3 @@ const MarketingPage = () => {
   )
 }
 
-export const config = defineRouteConfig({
-  label: "Marketing",
-  icon: Envelope,
-})
-
-export default MarketingPage

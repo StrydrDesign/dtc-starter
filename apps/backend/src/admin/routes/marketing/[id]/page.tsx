@@ -25,7 +25,7 @@ type MarketingEmail = {
   status: string
 }
 
-const EditorPage = () => {
+export default function EditorPage() {
   const { id } = useParams()
   const navigate = useNavigate()
 
@@ -254,4 +254,3 @@ const EditorPage = () => {
   )
 }
 
-export default EditorPage
