@@ -112,6 +112,25 @@ string wrapper (not a react-email render) is used deliberately because the body
 is already-rendered HTML, not JSX. This guarantees brand consistency + a
 compliant unsubscribe link regardless of editor content.
 
+### Unsubscribe mechanics (Resend-owned)
+
+- Resend handles the entire unsubscribe flow for broadcasts — **no endpoint,
+  webhook, or suppression list on our side.** We only ensure the link is present.
+- The footer's `{{{RESEND_UNSUBSCRIBE_URL}}}` is swapped per-recipient at send
+  time; Resend also auto-adds `List-Unsubscribe` + `List-Unsubscribe-Post`
+  headers, giving native one-click unsubscribe in Gmail/Apple Mail (also a
+  bulk-sender deliverability requirement).
+- Clicking unsubscribe hits Resend's **hosted** page and sets the contact's
+  `unsubscribed: true` in the Audience; Resend automatically **excludes
+  unsubscribed contacts from all future broadcasts**. Resend is the source of
+  truth — we never store unsubscribe state.
+- **Never auto-resubscribe:** the `order.placed` sync sets `unsubscribed: false`
+  only when *first* creating a contact, never on update, so a returning buyer
+  who opted out stays opted out.
+- **Transactional unaffected:** order-placed / order-shipped go via transactional
+  `emails.send` (not the Audience), so unsubscribed customers still receive
+  order updates — correct for service emails, which aren't marketing.
+
 ## Configuration (env)
 
 | Var | Purpose | Notes |
