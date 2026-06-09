@@ -85,6 +85,16 @@ module.exports = defineConfig({
       // editor_json, body_html) and tracks send status + Resend broadcast ID.
       resolve: "./src/modules/marketing-email",
     },
+    {
+      // Resend Audiences/Contacts/Broadcasts for marketing sends.
+      // Disabled gracefully if RESEND_API_KEY or RESEND_AUDIENCE_ID is unset.
+      resolve: "./src/modules/resend-marketing",
+      options: {
+        api_key: process.env.RESEND_API_KEY,
+        audience_id: process.env.RESEND_AUDIENCE_ID,
+        from: process.env.RESEND_MARKETING_FROM || "Strydr <hello@strydr.co.uk>",
+      },
+    },
   ],
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
