@@ -11,6 +11,7 @@ import {
 } from "@react-email/components"
 import * as React from "react"
 import type { BigNumberValue } from "@medusajs/framework/types"
+import { LOGO_WHITE_URL } from "../brand-tokens"
 
 // Kinetic Canvas design tokens (design-reference/DESIGN.md) expressed as Tailwind
 // theme extensions so the email templates read like the rest of the brand system.
@@ -43,10 +44,6 @@ export const tailwindConfig = {
     },
   },
 }
-
-// White wordmark (rendered from public/logo.svg), hosted on the Medusa file store.
-const LOGO_WHITE_URL =
-  "https://compose-reboot-optical-transmitter-kvvhi-8299f2-69-62-122-190.sslip.io/static/1780949763297-strydr-wordmark-white.png"
 
 // GBP-style currency formatting, tolerant of Medusa BigNumberValue inputs.
 export function formatPrice(price: BigNumberValue, currencyCode = "gbp"): string {
