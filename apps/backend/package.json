@@ -29,6 +29,8 @@
     "@medusajs/dashboard": "2.15.5",
     "@medusajs/draft-order": "2.15.5",
     "@medusajs/framework": "2.15.5",
+    "@medusajs/icons": "2.15.5",
+    "@medusajs/js-sdk": "2.15.5",
     "@medusajs/medusa": "2.15.5",
     "@medusajs/payment-stripe": "2.15.5",
     "@medusajs/ui": "4.1.15",
