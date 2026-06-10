@@ -33,6 +33,8 @@ services:
       - "9000:9000"
     environment:
       NODE_ENV: production
+      # Drop per-request HTTP access logs (Medusa default LOG_LEVEL is "http").
+      LOG_LEVEL: "info"
       DATABASE_URL: "postgres://postgres:${DB_PASSWORD}@medusa_postgres:5432/medusa"
       REDIS_URL: "redis://medusa_redis:6379"
       JWT_SECRET: "${JWT_SECRET}"

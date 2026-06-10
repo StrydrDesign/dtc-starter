@@ -95,6 +95,45 @@ module.exports = defineConfig({
         from: process.env.RESEND_MARKETING_FROM || "Strydr <hello@strydr.co.uk>",
       },
     },
+    // Redis-backed infrastructure modules. Redis runs in compose (medusa_redis);
+    // REDIS_URL is shared (Medusa namespaces its own keys). These make async work
+    // durable: without them the event bus + workflow engine are in-memory, so an
+    // order's side-effects (confirmation email, Royal Mail push) are lost if the
+    // process restarts mid-flight. Sessions already use this Redis.
+    {
+      resolve: "@medusajs/medusa/cache-redis",
+      options: { redisUrl: process.env.REDIS_URL },
+    },
+    {
+      resolve: "@medusajs/medusa/event-bus-redis",
+      options: {
+        redisUrl: process.env.REDIS_URL,
+        jobOptions: {
+          removeOnComplete: { age: 3600, count: 1000 },
+          removeOnFail: { age: 3600, count: 1000 },
+        },
+      },
+    },
+    {
+      resolve: "@medusajs/medusa/workflow-engine-redis",
+      options: {
+        // `redisUrl` lives inside `redis` (renamed from `url` in v2.12.2).
+        redis: { redisUrl: process.env.REDIS_URL },
+      },
+    },
+    {
+      resolve: "@medusajs/medusa/locking",
+      options: {
+        providers: [
+          {
+            resolve: "@medusajs/medusa/locking-redis",
+            id: "locking-redis",
+            is_default: true,
+            options: { redisUrl: process.env.REDIS_URL },
+          },
+        ],
+      },
+    },
   ],
   projectConfig: {
     databaseUrl: process.env.DATABASE_URL,
