@@ -1,14 +1,13 @@
-import { defineRouteConfig } from "@medusajs/admin-sdk"
-import { Envelope } from "@medusajs/icons"
+// Marketing is intentionally HIDDEN from the admin sidebar: the in-admin
+// composer is dormant (marketing has moved to a dedicated ESP). The route
+// still resolves at /app/marketing but has no nav entry, so the team won't
+// see a half-finished tool. To re-enable, restore the `defineRouteConfig`
+// export below plus the `defineRouteConfig` (@medusajs/admin-sdk) and
+// `Envelope` (@medusajs/icons) imports.
 import { Badge, Button, Container, Heading, Skeleton, Table, Text } from "@medusajs/ui"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useNavigate } from "react-router-dom"
 import { sdk } from "../../lib/sdk"
-
-export const config = defineRouteConfig({
-  label: "Marketing",
-  icon: Envelope,
-})
 
 type MarketingEmail = {
   id: string
