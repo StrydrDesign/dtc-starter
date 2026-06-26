@@ -30,7 +30,7 @@ services:
       redis:
         condition: service_started
     ports:
-      - "9000:9000"
+      - "100.99.151.35:9000:9000"
     environment:
       NODE_ENV: production
       # Drop per-request HTTP access logs (Medusa default LOG_LEVEL is "http").
